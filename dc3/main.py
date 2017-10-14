@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import dc3
+import search
 import sys
 
 myDc3 = dc3.Dc3()
@@ -8,6 +9,11 @@ if len(sys.argv) < 2:
 	print("Debe proveer un nombre de archivo")
 	exit(1)
 
+pattern = "hola"
+
+if len(sys.argv) == 3:
+	pattern = sys.argv[2]
+
 filepath = sys.argv[1]
 
 with open(filepath, 'r') as content_file:
@@ -15,9 +21,16 @@ with open(filepath, 'r') as content_file:
 
 procesed = myDc3.process(content)
 
-print ("Processed: {}".format(myDc3.indexes))
+#print ("Processed: {}".format(myDc3.indexes))
+
+#searcher = search.Search(myDc3.indexes, content)
 
 #for i, idx in enumerate(myDc3.indexes):
 #	print ("{}) {}".format(i, content[idx:]))
+
+#indexRange = searcher.search(pattern)
+
+#print("Encontrado entre los rangos {}".format(indexRange))
+#print(myDc3.indexes[indexRange[0] : indexRange[1]])
 
 print("Done")

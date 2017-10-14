@@ -26,12 +26,17 @@ class Dc3():
 
 
 class Dc3Recursive():
+    it = 0
+
     def __init__(self, values, codexSize):
-        print("\nIniciando recursividad con {}, codexsize {} ".format(values, codexSize))
+        print("\nIteration: ", Dc3Recursive.it)
+        print("Alphabet size: ", codexSize)
+        print("Values size: ", len(values))
         self.values = values
         self.values.append(0)
         self.values.append(0)
         self.codexSize = codexSize
+        Dc3Recursive.it += 1
 
     def _createIndexes(self, top):
         indexes = []
@@ -57,44 +62,33 @@ class Dc3Recursive():
             for idx in indexes:
                 radix[self.values[idx+tripletIdx]].append(idx)
             indexes = list(itertools.chain.from_iterable(radix))
-            radix = self._createRadix()
+            self._clearRadix(radix)
 
-        # El nuevo R con las posiciones ordenadas y sin duplicados
-        '''for curChar in range(0, self.codexSize + 1):
-            for idx in indexes:
-                if self.values[idx] == curChar:
-                    if self.values[idx : idx + 3] != lastTriplet:
-                        lastTriplet = self.values[idx : idx + 3]
-                        radixIdx += 1
-                    else:
-                        hasDuped = True
-                    idxPos = self._getIdxPosition(idx, len(indexes))
-                    ranks[idxPos] = radixIdx'''
 
         # En esta etapa ordeno y filtro
         hasDuped = False
         # Radix por la primer letra de la tripla
-        radix = self._createRadix()
+        self._clearRadix(radix)
         radixTops = [-1] * len(radix)
         for idx in indexes:
             curChar = self.values[idx]
             lastIdx = radixTops[curChar]
             radixValue = 1
             lastTriple = self.values[lastIdx : lastIdx+3]
-            if (len(lastTriple) > 0):
-                curTriple = self.values[idx : idx+3]
-                if curTriple == lastTriple:
-                    hasDuped = True
-                    radixValue = 0
+            curTriple = self.values[idx : idx+3]
+            if curTriple == lastTriple:
+                hasDuped = True
+                radixValue = 0
             radix[curChar].append((idx, radixValue))
             radixTops[curChar] = idx
 
         # Armo ranks
-        ranks = [None] * len(indexes)
+        numIndexes = len(indexes)
+        ranks = [None] * numIndexes
         counter = -1
         for sublist in radix:
             for r in sublist:
-                rankIdx = self._b12ToIndex(r[0], len(indexes))
+                rankIdx = self._b12ToIndex(r[0], numIndexes)
                 counter += r[1]
                 ranks[rankIdx] = counter
 
@@ -110,16 +104,17 @@ class Dc3Recursive():
             # ranks: indices unicos y ordenados
             dc3Rec = Dc3Recursive(ranks, counter)
             ranks = dc3Rec.process()
+            numRanks = len(ranks)
             for i, ri in enumerate(ranks):
-                indexes[i] = self._indexToB12(ri, len(ranks))
+                indexes[i] = self._indexToB12(ri, numRanks)
                 
         else:
+            numRanks = len(ranks)
             for i, ri in enumerate(ranks):
-                indexes[ri] = self._indexToB12(i, len(ranks))
+                indexes[ri] = self._indexToB12(i, numRanks)
                 
         self.ranks = ranks
 
-        print("[RadixSortB12] Devolviendo ", indexes)
         return indexes
 
     def radixSortB0(self, b12Sorted):
@@ -150,9 +145,9 @@ class Dc3Recursive():
         b012ranks[len(b012ranks) - 1] = 0
         b012ranks[len(b012ranks) - 2] = 0
 
-        #print ("B012 ranks: ", b012ranks)
-
-        while b0Index < len(b0) and b12Index < len(b12):
+        lenB0 = len(b0)
+        lenB12 = len(b12)
+        while b0Index < lenB0 and b12Index < lenB12:
             b0AuxIdx = b0[b0Index]
             b12AuxIdx = b12[b12Index]
             compType = b12AuxIdx % 3
@@ -174,6 +169,10 @@ class Dc3Recursive():
         for i in range(0, len(radix)):
             radix[i] = list()
         return radix
+
+    def _clearRadix(self, radix):
+        for r in radix:
+            del r[:]
 
     def _getIdxPosition(self, idx, lenIdx):
         offset = 0
@@ -219,9 +218,6 @@ class Codex():
 
     def getId(self, char):
         return self.charToId[char]
-
-    def getChar(self, encoded):
-        return self.idToChar[encoded]
 
     def getCodexSize(self):
         return self.codexSize

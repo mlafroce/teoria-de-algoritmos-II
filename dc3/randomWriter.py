@@ -10,7 +10,7 @@ filepath = sys.argv[1]
 randomfile = open(filepath, "w" )
 
 for i in range(int(input('How many random numbers?: '))):
-    line = str(randint(1, 10))
+    line = str(randint(0, 9))
     randomfile.write(line)
 
 randomfile.close()
