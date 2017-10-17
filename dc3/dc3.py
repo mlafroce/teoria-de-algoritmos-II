@@ -59,10 +59,7 @@ class Dc3Recursive():
         # radix por letra 2 y 1
         radix = self._createRadix()
         for tripletIdx in range(2, 0, -1):
-            for idx in indexes:
-                radix[self.values[idx+tripletIdx]].append(idx)
-            indexes = list(itertools.chain.from_iterable(radix))
-            self._clearRadix(radix)
+            indexes = self._sortTriplet(indexes, tripletIdx, radix)
 
 
         # En esta etapa ordeno y filtro
@@ -173,6 +170,13 @@ class Dc3Recursive():
     def _clearRadix(self, radix):
         for r in radix:
             del r[:]
+
+    def _sortTriplet(self, indexes, tripletIdx, radix):
+        for idx in indexes:
+            radix[self.values[idx+tripletIdx]].append(idx)
+        result = list(itertools.chain.from_iterable(radix))
+        self._clearRadix(radix)
+        return result
 
     def _getIdxPosition(self, idx, lenIdx):
         offset = 0
