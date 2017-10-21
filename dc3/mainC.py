@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import dc3
+import dc3c as dc3
 import search
 import sys
 

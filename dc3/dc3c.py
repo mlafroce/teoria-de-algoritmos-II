@@ -1,4 +1,5 @@
 import itertools
+import cRadix
 
 class Dc3():
     """Dc3 algorithm implementation"""
@@ -32,7 +33,6 @@ class Dc3Recursive():
         print("\nIteration: ", Dc3Recursive.it)
         print("Alphabet size: ", codexSize)
         print("Values size: ", len(values))
-
         self.values = values
         self.values.append(0)
         self.values.append(0)
@@ -59,15 +59,10 @@ class Dc3Recursive():
         indexes = self._createIndexes(len(self.values) - 2)
         
         # radix por letra 2 y 1
-        radix = self._createRadix()
-        for tripletIdx in range(2, 0, -1):
-            indexes = self._sortTriplet(indexes, tripletIdx, radix)
-        
-        # En esta etapa ordeno y filtro
-        hasDuped = False
-        self._clearRadix(radix)
+        cRadix.dc3Radix12(indexes, self.values, self.codexSize)
 
         # Radix por la primer letra de la tripla
+        radix = self._createRadix()
         hasDuped = self._sortAndFilter(indexes, radix)
 
         # Armo ranks
