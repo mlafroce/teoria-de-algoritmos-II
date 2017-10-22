@@ -1,4 +1,5 @@
 import itertools
+from math import log10, pow
 
 class Dc3():
     """Dc3 algorithm implementation"""
@@ -54,20 +55,20 @@ class Dc3Recursive():
         b012 = self.merge(b0Sorted, b12Sorted)
         return b012
 
-    #@profile
+    @profile
     def radixSortB12(self):
         indexes = self._createIndexes(len(self.values) - 2)
         
         # radix por letra 2 y 1
-        radix = self._createRadix()
+        
         for tripletIdx in range(2, 0, -1):
-            indexes = self._sortTriplet(indexes, tripletIdx, radix)
+            indexes = self._sortTriplet(indexes, tripletIdx)
         
         # En esta etapa ordeno y filtro
         hasDuped = False
-        self._clearRadix(radix)
 
         # Radix por la primer letra de la tripla
+        radix = self._createRadix()
         hasDuped = self._sortAndFilter(indexes, radix)
 
         # Armo ranks
@@ -162,11 +163,24 @@ class Dc3Recursive():
         for r in radix:
             del r[:]
 
-    def _sortTriplet(self, indexes, tripletIdx, radix):
-        for idx in indexes:
-            radix[self.values[idx+tripletIdx]].append(idx)
-        result = list(itertools.chain.from_iterable(radix))
-        self._clearRadix(radix)
+    def _sortTriplet(self, indexes, tripletIdx):
+        radix = [None] * 10
+        for i in range(0, 10):
+            radix[i] = list()
+        maxDigits = int(log10(self.codexSize + 1)) + 1
+        result = list() 
+
+        #for idx in indexes:
+        #    result.append(self.values[idx+tripletIdx])
+        for valueExp in range(0, maxDigits + 1):
+            valueMod = int(pow(10, valueExp))
+            for curIdx in indexes:
+                curValue = self.values[curIdx+tripletIdx]
+                radixIdx = int((curValue / valueMod) % 10)
+                radix[radixIdx].append(curIdx)
+            result = list(itertools.chain.from_iterable(radix))
+            for i in range(0, 10):
+                radix[i] = list()
         return result
 
     def _sortAndFilter(self, indexes, radix):

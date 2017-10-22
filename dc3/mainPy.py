@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-import dc3c as dc3
+import dc3
 import search
 import sys
-import struct
 
 myDc3 = dc3.Dc3()
 
@@ -25,10 +24,6 @@ procesed = myDc3.process(content)
 #print ("Processed: {}".format(myDc3.indexes))
 
 #searcher = search.Search(myDc3.indexes, content)
-
-#with open("indexes.idx", 'wb') as indexFile:
-#	for idx in myDc3.indexes:
-#		indexFile.write(struct.pack('i', idx))
 
 #for i, idx in enumerate(myDc3.indexes):
 #	print ("{}) {}".format(i, content[idx:]))
