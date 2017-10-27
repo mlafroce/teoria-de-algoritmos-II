@@ -10,30 +10,37 @@
 #include <vector>
 #include <iostream>
 #include "dc3radix.h"
-extern "C" {
 
-void radixSort12(int* indexes, int indexSize,
-    int* values, int valuesSize,
-    int radixSize) {
-    radixSort(indexes, indexSize, values, valuesSize, 2, radixSize);
-    radixSort(indexes, indexSize, values, valuesSize, 1, radixSize);
-}
+extern "C" {
 
 void radixSort(int* indexes, int indexSize,
     int* values, int valuesSize,
-    int tripletIdx, int radixSize) {
-    std::vector<std::vector<int> > radix(radixSize+1);
-    for (int i = 0; i < indexSize; ++i) {
-        int curIdx = indexes[i];
-        int radixIdx = values[curIdx + tripletIdx];
-        radix[radixIdx].push_back(curIdx);
+    int radixSize) {
+    Radix radix(indexes, indexSize, values, valuesSize, radixSize);
+    radix.sort(2);
+    radix.sort(1);
+    radix.sort(0);
+}
+
+} // extern
+
+Radix::Radix(int* indexes, int indexSize,
+            int* values, int valuesSize, int radixSize) :
+    indexSize(indexSize), indexes(indexes),
+    valuesSize(valuesSize), values(values),
+    radixSize(radixSize), radix(radixSize + 1) {}
+
+void Radix::sort(int tripletIdx) {
+    for (int i = 0; i < this->indexSize; ++i) {
+        int curIdx = this->indexes[i];
+        int radixIdx = this->values[curIdx + tripletIdx];
+        this->radix[radixIdx].push_back(curIdx);
     }
     // Ahora plancho el radix
     int offset = 0;
-    for (int ri = 0; ri < radixSize + 1; ++ri) {
-        std::copy(radix[ri].begin(), radix[ri].end(), indexes + offset);
+    for (int ri = 0; ri < this->radixSize + 1; ++ri) {
+        std::copy(radix[ri].begin(), radix[ri].end(), this->indexes + offset);
         offset += radix[ri].size();
+        radix[ri].clear();
     }
-}
-
 }

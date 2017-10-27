@@ -72,14 +72,14 @@ class Dc3Recursive():
 
         # Armo ranks
         numIndexes = len(indexes)
-        ranks = [None] * numIndexes
+        ranks = [0] * numIndexes
         counter = -1
         for sublist in radix:
             for r in sublist:
                 rankIdx = self._b12ToIndex(r[0], numIndexes)
                 counter += r[1]
                 ranks[rankIdx] = counter
-
+                
         '''
         print("[RadixSortB12] Values: {}".format(self.values))
         print("[RadixSortB12] Indexes: {}".format(indexes))
@@ -106,7 +106,7 @@ class Dc3Recursive():
         return indexes
 
     def radixSortB0(self, b12Sorted):
-        b1Top = int((len(b12Sorted) + 1) / 2)
+        b1Top = (len(b12Sorted) + 1) // 2
         b0Hints = []
         b0 = []
         if len(self.values) % 3 == 0:
@@ -153,7 +153,7 @@ class Dc3Recursive():
         return b012
 
     def _createRadix(self):
-        radix = [None] * (self.codexSize + 1)
+        radix = [0] * (self.codexSize + 1)
         for i in range(0, len(radix)):
             radix[i] = list()
         return radix
@@ -188,19 +188,19 @@ class Dc3Recursive():
     def _getIdxPosition(self, idx, lenIdx):
         offset = 0
         if idx % 3 == 2:
-            offset = int(lenIdx / 2) + lenIdx % 2
-        return offset + int(idx / 3)
+            offset = (lenIdx // 2) + lenIdx % 2
+        return offset + (idx // 3)
 
     def _indexToB12(self, idx, top):
-        b1Top = int((top + 1) / 2)
+        b1Top = (top + 1) // 2
         if (idx < b1Top):
             return idx * 3 + 1
         else:
             return (idx - b1Top) * 3 + 2
 
     def _b12ToIndex(self, idx, top):
-        b1Top = int((top + 1) / 2)
-        aux = int(idx / 3)
+        b1Top = (top + 1) // 2
+        aux = idx // 3
         if (idx % 3 == 1):
             return aux
         return aux + b1Top

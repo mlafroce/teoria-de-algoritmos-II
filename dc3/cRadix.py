@@ -6,7 +6,7 @@ void radixSort(int* indexes, int indexSize,
     int* values, int valuesSize,
     int radixSize)
 '''
-_radixDLL.radixSort12.argtypes = (ctypes.POINTER(ctypes.c_int), ctypes.c_int,
+_radixDLL.radixSort.argtypes = (ctypes.POINTER(ctypes.c_int), ctypes.c_int,
    ctypes.POINTER(ctypes.c_int), ctypes.c_int,
    ctypes.c_int)
 
@@ -21,7 +21,7 @@ def dc3Radix12(indexes, values, radixSize):
     cIndexesSize = ctypes.c_int(len(indexes))
     cValuesSize = ctypes.c_int(len(values))
     cRadixSize = ctypes.c_int(radixSize)
-    result = _radixDLL.radixSort12(cIndexes,
+    result = _radixDLL.radixSort(cIndexes,
         cIndexesSize, cValues, cValuesSize,
         cRadixSize)
     _convertCtoPython(indexes, cIndexes)
