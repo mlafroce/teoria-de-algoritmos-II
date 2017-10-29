@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import itertools
 import cRadix
 
@@ -58,29 +60,30 @@ class Dc3Recursive():
     def radixSortB12(self):
         indexes = self._createIndexes(len(self.values) - 2)
         
-        # radix por letra 2 y 1
-        cRadix.dc3Radix12(indexes, self.values, self.codexSize)
+        # radix por letra 2, 1 y 0
+        cRadix.dc3RadixB12(indexes, self.values, self.codexSize)
 
-        # Radix por la primer letra de la tripla
-        radix = self._createRadix()
-        hasDuped = self._sortAndFilter(indexes, radix)
+        # Ahora solo filtro
+        #hasDuped = self._sortAndFilter(indexes, radix)
+        dupedList = self._filter(indexes)
 
         # Armo ranks
         numIndexes = len(indexes)
         ranks = [None] * numIndexes
         counter = -1
-        for sublist in radix:
-            for r in sublist:
-                rankIdx = self._b12ToIndex(r[0], numIndexes)
-                counter += r[1]
-                ranks[rankIdx] = counter
+        for i in range (0, numIndexes):
+            rankIdx = self._b12ToIndex(indexes[i], numIndexes)
+            counter += dupedList[i]
+            ranks[rankIdx] = counter
 
-        '''
+        hasDuped = counter != (numIndexes - 1)
+
+        
         print("[RadixSortB12] Values: {}".format(self.values))
         print("[RadixSortB12] Indexes: {}".format(indexes))
         print("[RadixSortB12] Ranks: {}".format(ranks))
-        print("[RadixSortB12] Max value: {}".format(radixIdx))
-        '''
+        #print("[RadixSortB12] Max value: {}".format(radixIdx))
+        
 
         if (hasDuped):
             # radixIdx: max value
@@ -95,27 +98,35 @@ class Dc3Recursive():
             numRanks = len(ranks)
             for i, ri in enumerate(ranks):
                 indexes[ri] = self._indexToB12(i, numRanks)
-                
+        
         self.ranks = ranks
 
         return indexes
 
     def radixSortB0(self, b12Sorted):
-        b1Top = int((len(b12Sorted) + 1) / 2)
+        b1Top = (len(b12Sorted) + 1) // 2
         b0Hints = []
-        b0 = []
         if len(self.values) % 3 == 0:
             b0Hints.append(len(self.values) - 3)
+        # Me ayudo con los índices de B1 ordenados
+        # Los ranks me dicen como está ordenado el array [[3n+1]+[3n+2]]
+        # Ej: [1,4,7,10,2,5,8,11]
+        # Ranks: [0,1,6,4,2,5,3,7]
+        # 0->1, 1->4, 6->8, 4->2, 2->7, 5->5, 3->10, 7->11
+        # Los ranks menores a b1Top me dicen como está ordenado B1
+        # Es decir, ya tengo ordenado la segunda y tercer columna de B0
         for hint in self.ranks:
             if hint < b1Top:
                 b0Hints.append(hint * 3)
                 if hint == b1Top:
                     break
+
         radix = self._createRadix()
         for idx in b0Hints:
             radix[self.values[idx]].append(idx)
+        #cRadix.dc3RadixB0(b0Hints, self.values, self.codexSize)
         
-        return list(itertools.chain.from_iterable(radix))
+        return b0Hints
         
 
     def merge(self, b0, b12):
@@ -157,45 +168,36 @@ class Dc3Recursive():
         for r in radix:
             del r[:]
 
-    def _sortTriplet(self, indexes, tripletIdx, radix):
-        for idx in indexes:
-            radix[self.values[idx+tripletIdx]].append(idx)
-        result = list(itertools.chain.from_iterable(radix))
-        self._clearRadix(radix)
-        return result
-
-    def _sortAndFilter(self, indexes, radix):
-        radixTops = [-1] * len(radix)
-        hasDuped = False
-        for idx in indexes:
-            curChar = self.values[idx]
-            lastIdx = radixTops[curChar]
-            radixValue = 1
-            lastTriple = self.values[lastIdx : lastIdx+3]
-            curTriple = self.values[idx : idx+3]
-            if curTriple == lastTriple:
-                hasDuped = True
-                radixValue = 0
-            radix[curChar].append((idx, radixValue))
-            radixTops[curChar] = idx
-        return hasDuped
+    def _filter(self, indexes):
+        dupedList = [None] * len(indexes)
+        lastIdx = -1
+        for i, idx in enumerate(indexes):
+            lastTriplet = self.values[lastIdx : lastIdx+3]
+            curTriplet = self.values[idx : idx+3]
+            tripletValue = 1
+            if curTriplet == lastTriplet:
+                tripletValue = 0
+            dupedList[i] = tripletValue
+            lastIdx = idx
+            
+        return dupedList
 
     def _getIdxPosition(self, idx, lenIdx):
         offset = 0
         if idx % 3 == 2:
-            offset = int(lenIdx / 2) + lenIdx % 2
-        return offset + int(idx / 3)
+            offset = (lenIdx // 2) + lenIdx % 2
+        return offset + idx // 3
 
     def _indexToB12(self, idx, top):
-        b1Top = int((top + 1) / 2)
+        b1Top = (top + 1) // 2
         if (idx < b1Top):
             return idx * 3 + 1
         else:
             return (idx - b1Top) * 3 + 2
 
     def _b12ToIndex(self, idx, top):
-        b1Top = int((top + 1) / 2)
-        aux = int(idx / 3)
+        b1Top = (top + 1) // 2
+        aux = idx // 3
         if (idx % 3 == 1):
             return aux
         return aux + b1Top

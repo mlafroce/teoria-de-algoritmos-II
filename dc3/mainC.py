@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import dc3c as dc3
 import search
 import sys
@@ -30,8 +32,8 @@ procesed = myDc3.process(content)
 #	for idx in myDc3.indexes:
 #		indexFile.write(struct.pack('i', idx))
 
-#for i, idx in enumerate(myDc3.indexes):
-#	print ("{}) {}".format(i, content[idx:]))
+for i, idx in enumerate(myDc3.indexes):
+	print ("{}) {}".format(i, content[idx:]))
 
 #indexRange = searcher.search(pattern)
 

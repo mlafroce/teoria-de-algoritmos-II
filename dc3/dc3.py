@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import itertools
 from math import log10, pow
 
@@ -55,7 +57,7 @@ class Dc3Recursive():
         b012 = self.merge(b0Sorted, b12Sorted)
         return b012
 
-    @profile
+    #@profile
     def radixSortB12(self):
         indexes = self._createIndexes(len(self.values) - 2)
         
@@ -73,14 +75,14 @@ class Dc3Recursive():
 
         # Armo ranks
         numIndexes = len(indexes)
-        ranks = [None] * numIndexes
+        ranks = [0] * numIndexes
         counter = -1
         for sublist in radix:
             for r in sublist:
                 rankIdx = self._b12ToIndex(r[0], numIndexes)
                 counter += r[1]
                 ranks[rankIdx] = counter
-
+                
         '''
         print("[RadixSortB12] Values: {}".format(self.values))
         print("[RadixSortB12] Indexes: {}".format(indexes))
@@ -107,16 +109,23 @@ class Dc3Recursive():
         return indexes
 
     def radixSortB0(self, b12Sorted):
-        b1Top = int((len(b12Sorted) + 1) / 2)
+        b1Top = (len(b12Sorted) + 1) // 2
         b0Hints = []
-        b0 = []
         if len(self.values) % 3 == 0:
             b0Hints.append(len(self.values) - 3)
+        # Me ayudo con los índices de B1 ordenados
+        # Los ranks me dicen como está ordenado el array [[3n+1]+[3n+2]]
+        # Ej: [1,4,7,10,2,5,8,11]
+        # Ranks: [0,1,6,4,2,5,3,7]
+        # 0->1, 1->4, 6->8, 4->2, 2->7, 5->5, 3->10, 7->11
+        # Los ranks menores a b1Top me dicen como está ordenado B1
+        # Es decir, ya tengo ordenado la segunda y tercer columna de B0
         for hint in self.ranks:
             if hint < b1Top:
                 b0Hints.append(hint * 3)
                 if hint == b1Top:
                     break
+        
         radix = self._createRadix()
         for idx in b0Hints:
             radix[self.values[idx]].append(idx)
@@ -154,7 +163,7 @@ class Dc3Recursive():
         return b012
 
     def _createRadix(self):
-        radix = [None] * (self.codexSize + 1)
+        radix = [0] * (self.codexSize + 1)
         for i in range(0, len(radix)):
             radix[i] = list()
         return radix
@@ -202,19 +211,19 @@ class Dc3Recursive():
     def _getIdxPosition(self, idx, lenIdx):
         offset = 0
         if idx % 3 == 2:
-            offset = int(lenIdx / 2) + lenIdx % 2
-        return offset + int(idx / 3)
+            offset = (lenIdx // 2) + lenIdx % 2
+        return offset + (idx // 3)
 
     def _indexToB12(self, idx, top):
-        b1Top = int((top + 1) / 2)
+        b1Top = (top + 1) // 2
         if (idx < b1Top):
             return idx * 3 + 1
         else:
             return (idx - b1Top) * 3 + 2
 
     def _b12ToIndex(self, idx, top):
-        b1Top = int((top + 1) / 2)
-        aux = int(idx / 3)
+        b1Top = (top + 1) // 2
+        aux = idx // 3
         if (idx % 3 == 1):
             return aux
         return aux + b1Top
