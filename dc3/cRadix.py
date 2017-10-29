@@ -36,8 +36,8 @@ def dc3RadixB12(indexes, values, radixSize):
     result = _radixDLL.radixSort(
         cIndexesVector, cValuesVector, cRadixSize)
     _convertCtoPython(indexes, cIndexesVector.data)
-    print ("Returned: ", indexes)
 
+#@profile
 def dc3RadixB0(indexes, values, radixSize):
     # Declaro el tipo array de enteros
     indexesArray = ctypes.c_int * len(indexes)
@@ -49,8 +49,8 @@ def dc3RadixB0(indexes, values, radixSize):
     cIndexesSize = ctypes.c_int(len(indexes))
     cValuesSize = ctypes.c_int(len(values))
 
-    cIndexesVector = CVector(indexesArray(*indexes), cIndexesSize)
-    cValuesVector = CVector(valuesArray(*values), cValuesSize)
+    cIndexesVector = CVector(cIndexes, cIndexesSize)
+    cValuesVector = CVector(cValues, cValuesSize)
     cRadixSize = ctypes.c_int(radixSize)
     result = _radixDLL.radixSortB0(
         cIndexesVector, cValuesVector, cRadixSize)

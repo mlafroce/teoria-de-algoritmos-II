@@ -79,9 +79,9 @@ class Dc3Recursive():
         hasDuped = counter != (numIndexes - 1)
 
         
-        print("[RadixSortB12] Values: {}".format(self.values))
-        print("[RadixSortB12] Indexes: {}".format(indexes))
-        print("[RadixSortB12] Ranks: {}".format(ranks))
+        #print("[RadixSortB12] Values: {}".format(self.values))
+        #print("[RadixSortB12] Indexes: {}".format(indexes))
+        #print("[RadixSortB12] Ranks: {}".format(ranks))
         #print("[RadixSortB12] Max value: {}".format(radixIdx))
         
 
@@ -121,10 +121,10 @@ class Dc3Recursive():
                 if hint == b1Top:
                     break
 
-        radix = self._createRadix()
-        for idx in b0Hints:
-            radix[self.values[idx]].append(idx)
-        #cRadix.dc3RadixB0(b0Hints, self.values, self.codexSize)
+        #radix = self._createRadix()
+        #for idx in b0Hints:
+        #    radix[self.values[idx]].append(idx)
+        cRadix.dc3RadixB0(b0Hints, self.values, self.codexSize)
         
         return b0Hints
         
