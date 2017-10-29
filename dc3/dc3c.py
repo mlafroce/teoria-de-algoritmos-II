@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import itertools
 import cRadix
 
@@ -59,7 +61,7 @@ class Dc3Recursive():
         indexes = self._createIndexes(len(self.values) - 2)
         
         # radix por letra 2, 1 y 0
-        cRadix.dc3Radix12(indexes, self.values, self.codexSize)
+        cRadix.dc3RadixB12(indexes, self.values, self.codexSize)
 
         # Ahora solo filtro
         #hasDuped = self._sortAndFilter(indexes, radix)
@@ -104,19 +106,27 @@ class Dc3Recursive():
     def radixSortB0(self, b12Sorted):
         b1Top = (len(b12Sorted) + 1) // 2
         b0Hints = []
-        b0 = []
         if len(self.values) % 3 == 0:
             b0Hints.append(len(self.values) - 3)
+        # Me ayudo con los índices de B1 ordenados
+        # Los ranks me dicen como está ordenado el array [[3n+1]+[3n+2]]
+        # Ej: [1,4,7,10,2,5,8,11]
+        # Ranks: [0,1,6,4,2,5,3,7]
+        # 0->1, 1->4, 6->8, 4->2, 2->7, 5->5, 3->10, 7->11
+        # Los ranks menores a b1Top me dicen como está ordenado B1
+        # Es decir, ya tengo ordenado la segunda y tercer columna de B0
         for hint in self.ranks:
             if hint < b1Top:
                 b0Hints.append(hint * 3)
                 if hint == b1Top:
                     break
-        radix = self._createRadix()
-        for idx in b0Hints:
-            radix[self.values[idx]].append(idx)
+
+        #radix = self._createRadix()
+        #for idx in b0Hints:
+        #    radix[self.values[idx]].append(idx)
+        cRadix.dc3RadixB0(b0Hints, self.values, self.codexSize)
         
-        return list(itertools.chain.from_iterable(radix))
+        return b0Hints
         
 
     def merge(self, b0, b12):

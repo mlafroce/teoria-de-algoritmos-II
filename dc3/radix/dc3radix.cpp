@@ -13,12 +13,21 @@
 
 extern "C" {
 
-void radixSort(int* indexes, int indexSize,
-    int* values, int valuesSize,
+void radixSort(MyVector indexes,
+    MyVector values,
     int radixSize) {
-    Radix radix(indexes, indexSize, values, valuesSize, radixSize);
+    Radix radix(indexes.data, indexes.size,
+        values.data, values.size, radixSize);
     radix.sort(2);
     radix.sort(1);
+    radix.sort(0);
+}
+
+void radixSortB0(MyVector indexes,
+    MyVector values,
+    int radixSize) {
+    Radix radix(indexes.data, indexes.size,
+        values.data, values.size, radixSize);
     radix.sort(0);
 }
 

@@ -16,11 +16,23 @@ private:
     std::vector<std::vector<int> > radix;
 };
 
+// Parte visible de la biblioteca
+
 extern "C" {
 
-void radixSort(int* indexes, int indexSize,
-    int* values, int valuesSize,
+struct MyVector {
+    int* data;
+    int size;
+};
+
+void radixSort(MyVector indexes,
+    MyVector values,
+    int radixSize);
+
+void radixSortB0(MyVector indexes,
+    MyVector values,
     int radixSize);
 }
+
 
 #endif // __DC3RADIX_H__
